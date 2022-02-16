@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
+import exception.BooksNotFoundException;
+import exception.SystemException;
 import model.BookModel;
 import service.BookService;
 import service.BookServiceImpl;
@@ -47,46 +49,62 @@ public class BookMain {
 					System.out.println("Enter Book Cost: ");
 					newBook.setBookCost(scan.nextInt());
 					
-					BookModel addedBook = bookService.addBook(newBook);
+				BookModel addedBook;
+				try {
+					addedBook = bookService.addBook(newBook);
 					
 					System.out.println("New Book ID is: " + addedBook.getBookId());
 					System.out.println("New Book Title is: " + addedBook.getBookTitle());
 					System.out.println("New Book Genre is: " + addedBook.getBookGenre());
 					System.out.println("New Book Cost is: " + addedBook.getBookCost());
+				} catch (SystemException e) {
+					System.out.println(e.getMessage());
+				}
+					
 					break;
 					
 				case 2:
 					System.out.println("Enter the ID od the book you want to update: ");
 					int updateBook = scan.nextInt();
-					BookModel fetchedOldBook = bookService.fetchOneBook(updateBook);
+					BookModel fetchedOldBook;
 					
-					if(fetchedOldBook == null) {
-						System.out.println("Please enter a valid ID!");
-						break;
+					try {
+						fetchedOldBook = bookService.fetchOneBook(updateBook);
+						
+						if(fetchedOldBook == null) {
+							System.out.println("Please enter a valid ID!");
+							break;
+						}
+						
+						System.out.println("***********************************************");
+						System.out.println("Book ID: " + fetchedOldBook.getBookId());
+						System.out.println("Book Title: " + fetchedOldBook.getBookTitle());
+						System.out.println("Book Author: " + fetchedOldBook.getBookAuthor());
+						System.out.println("Book Genre: " + fetchedOldBook.getBookGenre());
+						System.out.println("Book Cost: " + fetchedOldBook.getBookCost());
+						System.out.println("***********************************************");
+						
+						System.out.println("Please enter a new cost: ");
+						
+						fetchedOldBook.setBookCost(scan.nextInt());
+						
+						bookService.updateBookCost(fetchedOldBook);
+						
+						System.out.println("Book Updated Successfully!");
+						
+					} catch (SystemException e) {
+						System.out.println(e.getMessage());
 					}
-					
-					System.out.println("***********************************************");
-					System.out.println("Book ID: " + fetchedOldBook.getBookId());
-					System.out.println("Book Title: " + fetchedOldBook.getBookTitle());
-					System.out.println("Book Author: " + fetchedOldBook.getBookAuthor());
-					System.out.println("Book Genre: " + fetchedOldBook.getBookGenre());
-					System.out.println("Book Cost: " + fetchedOldBook.getBookCost());
-					System.out.println("***********************************************");
-					
-					System.out.println("Please enter a new cost: ");
-					
-					fetchedOldBook.setBookCost(scan.nextInt());
-					
-					bookService.updateBookCost(fetchedOldBook);
-					
-					System.out.println("Book Updated Successfully!");
-					break;
-					
+						
+						break;
+						
 				case 3:
 					System.out.println("Enter the book ID you want to remove: ");
 					int bookToDeleteId = scan.nextInt();
 					
-					BookModel fetchedBook = bookService.deleteBook(bookToDeleteId);
+				BookModel fetchedBook;
+				try {
+					fetchedBook = bookService.deleteBook(bookToDeleteId);
 					
 					if(fetchedBook == null) {
 						System.out.println("Please enter a valid book ID!");
@@ -110,10 +128,18 @@ public class BookMain {
 						bookService.deleteBook(bookToDeleteId);
 						System.out.println("Book removed successfully!");
 					}
+					
+				} catch (SystemException e) {
+					System.out.println(e.getMessage());
+				}
+					
 					break;
 					
 				case 4:
-					List<BookModel> allBooks = bookService.fetchAllBooks();
+				List<BookModel> allBooks;
+				
+				try {
+					allBooks = bookService.fetchAllBooks();
 					// iterate through allBooks
 					Iterator<BookModel> itr = allBooks.iterator();
 					
@@ -125,6 +151,10 @@ public class BookMain {
 						System.out.println(book.getBookId() + "\t" + book.getBookTitle() + "\t" + book.getBookAuthor() + "\t" + book.getBookGenre() + "\t" + book.getBookCost());
 					}
 					System.out.println("*************************************************************************");
+				
+				} catch (SystemException | BooksNotFoundException e) {
+					System.out.println(e.getMessage());
+				}
 					break;
 					
 				case 5:
@@ -133,21 +163,37 @@ public class BookMain {
 //					System.out.println("Exiting System...");
 //					System.out.println("Thank you for using the Book Management System!");
 //					System.out.println("***********************************************");
-					System.exit(0);
+					
+				try {
+					bookService.exitApplication();
+					
+				} catch (SystemException e) {
+					System.out.println(e.getMessage());
+				}
+					
+				System.out.println("***********************************************");
+				System.out.println("Exiting System...");
+				System.out.println("Thank you for using the Book Management System!");
+				System.out.println("***********************************************");
+				
+				scan.close();
+				System.exit(0);
 
 			}
 			
 			System.out.println("Do You Want to Continue? (y/n): ");
 			ch = scan.next().charAt(0);
 			scan.nextLine();
+			
 		}
 		
 		System.out.println("***********************************************");
 		System.out.println("Exiting System...");
 		System.out.println("Thank you for using the Book Management System!");
 		System.out.println("***********************************************");
-			
+		
 		scan.close();
+		System.exit(0);
 		
 	}
 

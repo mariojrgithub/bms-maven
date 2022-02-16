@@ -7,12 +7,14 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import exception.BooksNotFoundException;
+import exception.SystemException;
 import model.BookModel;
 
 public class BookJDBCDaoImpl implements BookDao {
 
 	@Override
-	public List<BookModel> fetchAllBooks() {
+	public List<BookModel> fetchAllBooks() throws SystemException, BooksNotFoundException {
 
 		// create ArrayList to how all book info from DB
 		List <BookModel> allBooks = new ArrayList<>();
@@ -39,7 +41,11 @@ public class BookJDBCDaoImpl implements BookDao {
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new SystemException();
+		}
+		
+		if(allBooks.isEmpty()) {
+			throw new BooksNotFoundException();
 		}
 			
 		// return ArrayList
@@ -48,7 +54,7 @@ public class BookJDBCDaoImpl implements BookDao {
 
 
 	@Override
-	public BookModel addBook(BookModel bookModel) {
+	public BookModel addBook(BookModel bookModel) throws SystemException {
 		
 		Connection conn = DBUtil.obtainConnection();
 		
@@ -79,14 +85,14 @@ public class BookJDBCDaoImpl implements BookDao {
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new SystemException();
 		}
 		
 		return bookModel;
 	}
 
 	@Override
-	public BookModel updateBookCost(BookModel bookModel) {
+	public BookModel updateBookCost(BookModel bookModel) throws SystemException {
 
 		Connection conn = DBUtil.obtainConnection();
 		
@@ -101,7 +107,7 @@ public class BookJDBCDaoImpl implements BookDao {
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new SystemException();
 		}
 		
 		
@@ -109,7 +115,7 @@ public class BookJDBCDaoImpl implements BookDao {
 	}
 
 	@Override
-	public BookModel deleteBook(int bookId) {
+	public BookModel deleteBook(int bookId) throws SystemException {
 		
 		BookModel bookModel = null;
 		Connection conn = DBUtil.obtainConnection();
@@ -120,20 +126,20 @@ public class BookJDBCDaoImpl implements BookDao {
 			// get book
 			bookModel = fetchOneBook(bookId);
 			// delete book
-			String query = "DELETE FROM book_details WHERE book_id==" + bookId;
+			String query = "DELETE FROM book_details WHERE book_id=" + bookId;
 			
 			int rows = stmt.executeUpdate(query);
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new SystemException();
 		}
 		
 		return bookModel;
 	}
 
 	@Override
-	public BookModel fetchOneBook(int bookId) {
+	public BookModel fetchOneBook(int bookId) throws SystemException {
 		
 		BookModel bookModel = null;
 		
@@ -154,7 +160,7 @@ public class BookJDBCDaoImpl implements BookDao {
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new SystemException();
 		}
 			
 		return bookModel;
