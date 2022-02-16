@@ -4,6 +4,7 @@ import java.util.List;
 
 import dao.BookDao;
 import dao.BookDaoImpl;
+import dao.BookJDBCDaoImpl;
 import model.BookModel;
 
 public class BookServiceImpl implements BookService {
@@ -12,7 +13,8 @@ public class BookServiceImpl implements BookService {
 	
 	public BookServiceImpl() {
 		
-		bookDao = new BookDaoImpl(); 
+//		bookDao = new BookDaoImpl(); 
+		bookDao = new BookJDBCDaoImpl();
 
 	}
 
